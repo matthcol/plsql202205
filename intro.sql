@@ -48,12 +48,19 @@ from movies m left join stars s on m.id_director = s.id
 where m.id = 7131622;
 
 declare
+    type t_title_year_name is record (
+        title movies.title%type,
+        year movies.year%type,
+        name stars.name%type
+    );
+
     v_counter number(10);
     v_found boolean := false;
     v_title movies.title%type; -- same type as column movies.title
     v_movie movies%rowtype; -- same as 1 row of table movies (record)
     v_name stars.name%type;
     v_year movies.year%type;
+    v_title_year_name t_title_year_name; -- variable of type record custom
 begin
     DBMS_OUTPUT.put_line('Counter: ' || v_counter); -- v_counter NULL
     
@@ -71,6 +78,12 @@ begin
         from movies m left join stars s on m.id_director = s.id
         where m.id = 7131622;
     DBMS_OUTPUT.put_line('Movie title: ' || v_title || ' (' || v_year || ') by ' || v_name);
+
+    select m.title, m.year, s.name into v_title_year_name
+        from movies m left join stars s on m.id_director = s.id
+        where m.id = 7131622;
+    DBMS_OUTPUT.put_line('Movie title: ' || v_title_year_name.title 
+        || ' (' || v_title_year_name.year || ') by ' || v_title_year_name.name);
     
     dbms_output.new_line;
 end;
