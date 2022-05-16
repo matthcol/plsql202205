@@ -30,10 +30,31 @@ end;
 select movie_count_by_year(1984) from dual;
 select movie_count_by_year(2021) from dual;
 
+-- call without p_id
 call create_movie('The Batman', 2022);
 call create_movie(p_title => 'The Batman', p_year => 2022);
 call create_movie(p_year => 2022, p_title => 'The Batman');
 call create_movie(p_title => 'The Batman'); -- OK for calling but constraint violation
+
+declare
+    v_id number;
+begin
+    create_movie('The Batman', 2022, v_id);
+    DBMS_OUTPUT.put_line('Movie created with id: ' || v_id);
+    create_movie(p_title => 'The Batman', p_year => 2022, p_id => v_id);
+    DBMS_OUTPUT.put_line('Movie created with id: ' || v_id);
+    create_movie(p_year => 2022, p_title => 'The Batman', p_id => v_id);
+    DBMS_OUTPUT.put_line('Movie created with id: ' || v_id);
+    -- create_movie(p_title => 'The Batman', p_id => v_id); -- OK for calling but constraint violation
+    -- DBMS_OUTPUT.put_line('Movie created with id: ' || v_id);
+end;
+/
+
+
 select * from movies where title like 'The Batman';
 delete from movies where title like 'The Batman';
+
+-- NB: use sequence
+select ISEQ$$_73704.nextval from dual;
+select ISEQ$$_73704.currval from dual;
 
