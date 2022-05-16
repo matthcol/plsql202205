@@ -26,3 +26,14 @@ begin
     dbms_output.put_line('Movie count: ' || v_movie_count);
 end;
 /
+
+select movie_count_by_year(1984) from dual;
+select movie_count_by_year(2021) from dual;
+
+call create_movie('The Batman', 2022);
+call create_movie(p_title => 'The Batman', p_year => 2022);
+call create_movie(p_year => 2022, p_title => 'The Batman');
+call create_movie(p_title => 'The Batman'); -- OK for calling but constraint violation
+select * from movies where title like 'The Batman';
+delete from movies where title like 'The Batman';
+
