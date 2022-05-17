@@ -6,7 +6,7 @@ create or replace package pack_movie is
         title movies.title%type,
         year movies.year%type);
     
-    function movie_count_by_year(p_year number) return number;
+    function movie_count_by_year(p_year number, p_year2 number := NULL) return number;
     
     procedure create_movie(
         p_title in varchar2, 
@@ -18,18 +18,32 @@ end pack_movie;
 
 create or replace package body pack_movie is
 
-    function movie_count_by_year(p_year number) return number is
+    function movie_count_by_year(p_year number, p_year2 number) return number is
+        v_movie_count number;
     begin
-        return 0;
+        if p_year is null then
+            v_movie_count := -1;
+        elsif p_year2 is null then
+            select count(*) into v_movie_count from movies where year = p_year;
+        else
+            select count(*) into v_movie_count from movies 
+            where year between p_year and p_year2;
+        end if;
+        return v_movie_count;
     end;
 
     procedure create_movie(
         p_title in varchar2, 
-        p_year in number := NULL,
+        p_year in number,
         p_id out number
     ) is
+        v_year number := p_year;
     begin
-        p_id := -1;
+        if p_year is null then
+            v_year := extract(year from current_date);
+        end if;
+        insert into movies (title, year) values (p_title, v_year);
+        p_id := ISEQ$$_73704.currval;
     end;
     
 end pack_movie;        

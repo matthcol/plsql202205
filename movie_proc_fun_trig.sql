@@ -49,3 +49,14 @@ begin
 end;
 /
 
+create or replace procedure create_movie_director(
+    p_title in varchar2, 
+    p_year in number := NULL,
+    p_id out number
+) is
+begin
+    insert into movies (title, year) values (p_title, p_year);
+    -- select ISEQ$$_73704.currval into p_id from dual;
+    p_id := ISEQ$$_73704.currval;
+end;
+/

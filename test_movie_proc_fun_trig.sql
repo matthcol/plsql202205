@@ -98,10 +98,12 @@ end;
 /
 
 -- find by title
+-- if there are homonyms : error ORA - 1422 : TOO_MANY_ROWS
 declare
     v_movie movies%rowtype;
     -- v_title movies.title%type  := 'The Terminator';
-    v_title movies.title%type  := 'Terminator 10';
+    -- v_title movies.title%type  := 'Terminator 10';
+    v_title movies.title%type  := 'The Man Who Knew Too Much';
 begin
     select * into v_movie from movies where title = v_title;
     DBMS_OUTPUT.PUT_LINE('Movie found: ' 
@@ -111,11 +113,23 @@ begin
 exception
     when NO_DATA_FOUND then
         DBMS_OUTPUT.PUT_LINE('Movie not found with title: ' || v_title);
+    when TOO_MANY_ROWS then
+        DBMS_OUTPUT.PUT_LINE('More than one movie found with this title: ' || v_title);
 end;
 /
 
+-- in SQL : a sub-query returning 0-1 rows is not a problem with operator =, <, >, ... 
+select * from stars where id = (select id_director from movies where id = 1);
+select * from stars where id = (select id_director from movies where id = 499549);
 
+select * from stars where id = (select id_director from movies where title = 'The Terminator');
+-- Too many rows in subquery : ORA-1427
+select * from stars where id = (select id_director from movies where title = 'The Man Who Knew Too Much');
+-- OK with IN operator (  >ANY, >ALL, .... )
+select * from stars where id IN (select id_director from movies where title = 'The Man Who Knew Too Much');
+select * from stars where id IN (select id_director from movies where title = 'The Lion King');
 
+select * from stars where name = 'Steve McQueen';
 
 
 
